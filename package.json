@@ -1,0 +1,19 @@
+{
+  "name": "blightstatus-nodetiles",
+  "version": "0.0.1",
+  "description": "Joyful map rendering with Node.js.",
+  "contributors": [
+    {
+      "name": "Eddie Tejeda",
+      "email": "eddie@codeforamerica.org"
+    }
+  ],
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  },
+  "dependencies": {
+    "express": "3.x",
+    "nodetiles-core": "https://github.com/eddietejeda/nodetiles-core/tarball/master"
+  }
+}
