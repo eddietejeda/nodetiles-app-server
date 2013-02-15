@@ -21,13 +21,12 @@ var map = new nodetiles.Map({
 });
 
 map.addData(new PostGISSource({
-  connectionString: "tcp://postgres@localhost/neworleans_addresses", // required
+  connectionString: "tcp://postgres@localhost/blightstatus_be", // required
   tableName: "addresses",                              // required
-  geomField: "geom",                            // required
+  geomField: "point",                            // required
   // fields: "speed, shape_len",                        // optional, speeds things up
   name: "addresses",                                     // optional, uses table name otherwise
   projection: 'EPSG:900913',                                   // optional, defaults to 4326
-  // projection: 4326,                                   // optional, defaults to 4326
 }));
 
 
