@@ -1,4 +1,4 @@
-/* Set up the libraries */
+  /* Set up the libraries */
 var nodetiles = require('nodetiles-core'),
     PostGISSource = nodetiles.datasources.PostGIS,
     GeoJsonSource = nodetiles.datasources.GeoJson,
@@ -16,9 +16,7 @@ var DEBUG = true;
 
 
 /* Create your map context */
-var map = new nodetiles.Map({
-    projection: "EPSG:900913" // set the projection of the map
-});
+var map = new nodetiles.Map();
 
 map.addData(new PostGISSource({
   connectionString: "tcp://postgres@localhost/blightstatus_be", // required
