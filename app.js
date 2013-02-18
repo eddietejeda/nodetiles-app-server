@@ -7,7 +7,7 @@ var nodetiles = require('nodetiles-core'),
     app = module.exports = express(),
     fs = require('fs'),
     TileJSON = require('./app/tilejson');
-    AddressDatabase = require('./app/database');
+    AddressDatabase = require('./db/AddressDatabase');
     
 
 // Some general settings
