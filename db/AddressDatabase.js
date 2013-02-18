@@ -2,9 +2,8 @@ var nodetiles = require('nodetiles-core'),
     PostGISSource = nodetiles.datasources.PostGIS;
 
 var AddressDatabase = function(options) {
-
+  var options = options || {};
   //defaults
-  this.connectionString = '';
   if(process.env.PRODUCTION){
     this.connectionString = "tcp://" + process.env.DATABASE_URL;
   }
@@ -12,7 +11,8 @@ var AddressDatabase = function(options) {
     this.connectionString = "tcp://" + options.connectionString;
   }
   else{
-    throw new Error("You must set options.connectionString");
+    this.connectionString = "tcp://" + 'postgres@localhost/blightstatus_be';
+    // throw new Error("You must set options.connectionString");
   }
   
 

@@ -24,7 +24,7 @@ var tilejson = new TileJSON({ mapCenter: [90.0761,29.9531,17],
                               mapName: "neworleans" });
 
 // Automatically configure the database
-var database = new AddressDatabase({ connectionString: 'postgres@localhost/blightstatus_be' });
+var database = new AddressDatabase();
 
 // console.log(database);
 
