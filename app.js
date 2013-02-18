@@ -6,7 +6,9 @@ var nodetiles = require('nodetiles-core'),
     path = require('path'),
     express = require('express'),
     app = module.exports = express(),
-    fs = require('fs');
+    fs = require('fs'),
+    TileJSON = require('./app/tilejson');
+    
 
 
 var PORT = process.env.PORT || process.argv[2] || 5000;
@@ -17,16 +19,40 @@ var DEBUG = true;
 
 /* Create your map context */
 var map = new nodetiles.Map();
+var tilejson = new TileJSON({
+  mapCenter: [90.0761,29.9531,17],
+  mapName: "neworleans"
+});
+
+
+var db_connection = '';
+if(process.env.PRODUCTION){
+  connectionString = "tcp://" + process.env.DATABASE_URL;
+}
+else{
+  connectionString = "tcp://postgres@localhost/blightstatus_be";
+}
 
 map.addData(new PostGISSource({
-  connectionString: "tcp://postgres@localhost/blightstatus_be", // required
-  tableName: "addresses",                              // required
-  geomField: "point",                            // required
-  // fields: "speed, shape_len",                        // optional, speeds things up
-  name: "addresses",                                     // optional, uses table name otherwise
-  projection: 'EPSG:900913',                                   // optional, defaults to 4326
-}));
+  connectionString: connectionString, // required
+  tableName: "addresses",  // required
+  geomField: "point",  // required
+  // fields: "speed, shape_len",  // optional, speeds things up
+  name: "addresses",    // optional, uses table name otherwise
+  projection: 'EPSG:900913',   // optional, defaults to 4326
+  requestParams: {
+    open_cases : { 
+      required : false,  //defaults to false, @TODO implement required conditions
+      statement: ' open_count >= :open_cases '
+    },
+    closed_cases : { 
+      required : false,
+      statement: ' closed_count >= :closed_cases '
+    }
+  }
 
+}));
+  
 
 /* Link your Carto stylesheet */
 map.addStyle(fs.readFileSync('./styles/style.mss','utf8'));
@@ -34,7 +60,7 @@ map.addStyle(fs.readFileSync('./styles/style.mss','utf8'));
 
 
 //
-// Configure Express routes
+// Configure Express Express
 //
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
@@ -48,8 +74,7 @@ app.configure('production', function(){
 // Wire up the URL routing
 app.use('/tiles', nodetiles.route.tilePng({ map: map })); // tile.png
 app.use('/utfgrids', nodetiles.route.utfGrid({ map: map })); // utfgrids
-// tile.json: use app.get for the tile.json since we're serving a file, not a directory
-app.get('/tile.json', nodetiles.route.tileJson({ path: __dirname + '/map/tile.json' }));
+app.get('/tile.json', nodetiles.route.tileJson(tilejson));
 
 
 
