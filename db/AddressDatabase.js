@@ -5,14 +5,19 @@ var AddressDatabase = function(options) {
   var options = options || {};
   //defaults
   if(process.env.PRODUCTION){
+    console.log('Production Database');
     this.connectionString = "tcp://" + process.env.DATABASE_URL;
   }
+  else if (process.env.DEVELOPMENT_DATABASE_URL){
+    console.log('Development Database');
+    this.connectionString = "tcp://" + process.env.DEVELOPMENT_DATABASE_URL;
+  }
   else if (options.connectionString){
+    console.log('Provided Connection String Database');
     this.connectionString = "tcp://" + options.connectionString;
   }
   else{
-    this.connectionString = "tcp://" + 'postgres@localhost/blightstatus_be';
-    // throw new Error("You must set options.connectionString");
+    throw new Error("You must set options.connectionString");    
   }
   
 
