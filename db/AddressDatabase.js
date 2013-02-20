@@ -4,7 +4,7 @@ var nodetiles = require('nodetiles-core'),
 var AddressDatabase = function(options) {
   var options = options || {};
   //defaults
-  if(process.env.PRODUCTION){
+  if(process.env.NODE_ENV  == 'production'){
     console.log('Production Database');
     this.connectionString = "tcp://" + process.env.DATABASE_URL;
   }
