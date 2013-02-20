@@ -20,6 +20,7 @@ var AddressDatabase = function(options) {
     throw new Error("You must set options.connectionString");    
   }
   
+  console.log(this.connectionString);
 
   var connection = new PostGISSource({
     connectionString: this.connectionString, // required

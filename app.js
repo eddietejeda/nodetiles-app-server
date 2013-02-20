@@ -26,6 +26,9 @@ var tilejson = new TileJSON({ mapCenter: [90.0761,29.9531,17],
 // Automatically configure the database
 var database = new AddressDatabase();
 
+
+
+
 // console.log(database);
 
 // Connect the database to the map
