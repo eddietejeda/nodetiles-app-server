@@ -8,8 +8,8 @@ var AddressDatabase = function(options) {
     console.log('Production Database');
     this.connectionString = "tcp://" + process.env.DATABASE_URL;
   }
-  else if (process.env.DEVELOPMENT_DATABASE_URL){
-    console.log('Development Database');
+  else if (process.env.NODE_ENV  == 'development'){
+    console.log('Development Database defined at DEVELOPMENT_DATABASE_URL');
     this.connectionString = "tcp://" + process.env.DEVELOPMENT_DATABASE_URL;
   }
   else if (options.connectionString){
