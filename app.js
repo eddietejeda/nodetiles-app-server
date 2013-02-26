@@ -6,7 +6,7 @@ var nodetiles = require('nodetiles-core'),
     express = require('express'),
     app = module.exports = express(),
     fs = require('fs'),
-    Addresses = require('./db/AddressDatabase'),    
+    Address = require('./models/Address'),    
     TileJSON = require('./app/tilejson'),
     appServer = require('./app/server');
 
@@ -17,7 +17,7 @@ var DEBUG = true;
 
 
 // Automatically configure the database
-var addresses = new Addresses();
+var addresses = new Address();
 // console.log(addresses);
  
 // Generate the TileJSON

@@ -6,7 +6,7 @@
 var fs = require('fs'),
     nodetiles = require('nodetiles-core'),
     Projector = nodetiles.projector,
-    Agency = require('../db/AgencySettings');
+    Agency = require('../models/Agency');
 
 
 /**
