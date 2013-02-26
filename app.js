@@ -6,33 +6,34 @@ var nodetiles = require('nodetiles-core'),
     express = require('express'),
     app = module.exports = express(),
     fs = require('fs'),
-    TileJSON = require('./app/tilejson');
-    AddressDatabase = require('./db/AddressDatabase');
-    
+    Addresses = require('./db/AddressDatabase'),    
+    TileJSON = require('./app/tilejson'),
+    appServer = require('./app/server');
 
 // Some general settings
 var PORT = process.env.PORT || process.argv[2] || 5000;
 var DEBUG = true;
 
 
+
+// Automatically configure the database
+var addresses = new Addresses();
+// console.log(addresses);
+ 
+// Generate the TileJSON
+// expects the following JSON structure
+// { mapCenter: [90.0761,29.9531,17],mapName: "neworleans" }
+var tilejson = new TileJSON();
+
 // Create your map context
 var map = new nodetiles.Map();
 
 
-// Generate the TileJSON
-var tilejson = new TileJSON({ mapCenter: [90.0761,29.9531,17],
-                              mapName: "neworleans" });
-
-// Automatically configure the database
-var database = new AddressDatabase();
 
 
-
-
-// console.log(database);
 
 // Connect the database to the map
-map.addData(database);
+map.addData(addresses);
   
 
 // Link your Carto stylesheet
@@ -50,9 +51,9 @@ app.configure('production', function(){
 
 
 // Wire up the URL routing
-app.use('/tiles', nodetiles.route.tilePng({ map: map })); // tile.png
-app.use('/utfgrids', nodetiles.route.utfGrid({ map: map })); // utfgrids
-app.get('/tile.json', nodetiles.route.tileJson(tilejson));
+app.use('/:agencyName/tiles', appServer.tilePng({ map: map })); // tile.png
+app.use('/:agencyName/utfgrids', appServer.utfGrid({ map: map })); // utfgrids
+app.get('/:agencyName/tile.json', appServer.tileJson({ tilejson: tilejson }));
 
 
 // Serve a basic index.html
