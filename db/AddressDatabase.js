@@ -3,14 +3,16 @@ var nodetiles = require('nodetiles-core'),
 
 var AddressDatabase = function(options) {
   var options = options || {};
+
+  
   //defaults
   if(process.env.NODE_ENV  == 'production'){
     console.log('Production Database');
     this.connectionString = "tcp://" + process.env.DATABASE_URL;
   }
   else if (process.env.NODE_ENV  == 'development'){
-    console.log('Development Database defined at DEVELOPMENT_DATABASE_URL');
-    this.connectionString = "tcp://" + process.env.DEVELOPMENT_DATABASE_URL;
+    console.log('Development Database defined at NODE_DEVELOPMENT_DATABASE_URL');
+    this.connectionString = "tcp://" + process.env.NODE_DEVELOPMENT_DATABASE_URL;
   }
   else if (options.connectionString){
     console.log('Provided Connection String Database');
@@ -30,12 +32,14 @@ var AddressDatabase = function(options) {
     name: "addresses",    // optional, uses table name otherwise
     projection: 'EPSG:900913',   // optional, defaults to 4326
     requestParams: {
+      agency_id : { 
+        _default : { agency_id : options.agency_id },  
+        statement: ' agency_id >= :agency_id '
+      },
       open_cases : { 
-        required : false,  //defaults to false, @TODO implement required conditions
         statement: ' open_count >= :open_cases '
       },
       closed_cases : { 
-        required : false,
         statement: ' closed_count >= :closed_cases '
       }
     }
@@ -47,7 +51,3 @@ var AddressDatabase = function(options) {
 
 
 module.exports = AddressDatabase;
-
-
-
-
