@@ -51,9 +51,9 @@ app.configure('production', function(){
 
 
 // Wire up the URL routing
-app.use('/:agencyName/tiles', appServer.tilePng({ map: map })); // tile.png
-app.use('/:agencyName/utfgrids', appServer.utfGrid({ map: map })); // utfgrids
-app.get('/:agencyName/tile.json', appServer.tileJson({ tilejson: tilejson }));
+app.use('/tiles/' /* :agencyName */, appServer.tilePng({ map: map })); // tile.png
+app.use('/utfgrids/' /* :agencyName */ , appServer.utfGrid({ map: map })); // utfgrids
+app.get('/tilejson/:agencyName/address.json', appServer.tileJson({ tilejson: tilejson }));
 
 
 // Serve a basic index.html
