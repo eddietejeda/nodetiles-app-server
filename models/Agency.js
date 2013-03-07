@@ -1,10 +1,17 @@
 var pg        = require("pg").native,
     nodetiles = require('nodetiles-core'),
-    when = require('when'),
     Projector = nodetiles.projector;
 
-var Agency = function(options) {
+
+
+    
+    
+var Agency = function(req, res, options) {
+  this.req = req || {};
+  this.res = res || {};
   this.options = options || {};
+  this.settings = options || {};
+  
   //defaults
   if(process.env.NODE_ENV  == 'production'){
     console.log('Production Database');
@@ -21,9 +28,14 @@ var Agency = function(options) {
   else{
     throw new Error("You must set options.connectionString");    
   }
-  
-  console.log('inside init options ' + this.options.agencyName);
-  
+    
+
+  // if (this.options.agencyName){
+  //   this.agencyName = this.options.agencyName
+  // }
+  // else{
+  //   throw new Error("You must set options.agencyName");    
+  // }
 
   this.client = new pg.Client(this.connectionString);
     
@@ -33,45 +45,22 @@ var Agency = function(options) {
 Agency.prototype = {
   constructor: Agency,
   
-  getSettings : function(callback) {
+  getSettings : function(err_callback, success_callback){
+    var client = this.client,
+        options = this.options,
+        req = this.req,
+        res = this.res;       
 
-    console.log('this.options.agencyName = ' + this.options.agencyName);
-    // 
-    // this._query(this.options.agencyName, callback);
-
-
-    return this._query(this.options.agencyName).then(
-    	function success(rows) {
-        this.rows = rows;
-        callback(rows);
-        console.log('success');
-        return rows;
-        // console.log(rows);
-        
-    	},
-    	function error(err) {
-        console.log(err);
-    	}
-    );
-    
-  },
-  
-  
-  _query : function(agencyName){
- 	  var deferred = when.defer();
-  
-    var client = this.client;
-    console.log('hello'  + agencyName);
-    client.connect(function(err){
-      client.query("SELECT * FROM Agencies WHERE alias=$1;", [agencyName], 
-        function(err, result){        
-      		deferred.resolve(result.rows[0]); 
-        }
-      )
+    client.connect(function(err) {
+      client.query("SELECT settings FROM Agencies WHERE alias=$1 LIMIT 1;", [options.agencyName], function(err, result) {
+        console.log(result.rows)
+        this.settings = JSON.parse(result.rows[0]['settings']); 
+        success_callback(this.settings);
+      });
     });
-
-  	return deferred.promise;
   }
+  
+  
 }
 
 
