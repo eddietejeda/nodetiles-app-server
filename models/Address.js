@@ -1,7 +1,7 @@
 var nodetiles = require('nodetiles-core'),
     PostGISSource = nodetiles.datasources.PostGIS;
 
-var AddressDatabase = function(options) {
+var Address = function(options) {
   var options = options || {};
 
   
@@ -32,9 +32,8 @@ var AddressDatabase = function(options) {
     name: "addresses",    // optional, uses table name otherwise
     projection: 'EPSG:900913',   // optional, defaults to 4326
     requestParams: {
-      agency_id : { 
-        _default : { agency_id : options.agency_id },  
-        statement: ' agency_id >= :agency_id '
+      agency_name : { 
+        statement: ' agency_name = :agency_name '
       },
       open_cases : { 
         statement: ' open_count >= :open_cases '
@@ -50,4 +49,4 @@ var AddressDatabase = function(options) {
 }
 
 
-module.exports = AddressDatabase;
+module.exports = Address;
