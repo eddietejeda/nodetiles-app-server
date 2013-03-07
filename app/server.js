@@ -31,32 +31,54 @@ module.exports.tilePng = function tilePng(options){
   
   return function tilePng(req, res, next){
     var tileCoordinate, bounds;
+    options.agencyName = req.url.substr(1).split("/")[0];
+    var agency = new Agency(req, res, options);
+    agency.getSettings(
+      function(err){
+      
+      },
+      function(settings){
+        settings = settings['generatedTileJsons'][0];
 
-    var settings = agencies(req.params);
+        if(options.agencyName){
+          console.log('success 1');
+          req.agency_name = options.agencyName;
+        }
+        else{
+          throw new Error("You must set req.agency_name");      
+        }
 
-    // verify arguments
-    tileCoordinate = req.path.match(/(\d+)\/(\d+)\/(\d+)\.png$/);
-    if (!tileCoordinate) {
-      return next();
-    }
-    // slice the regexp down to usable size      
-    tileCoordinate = tileCoordinate.slice(1,4).map(Number);
+        // verify arguments
+        tileCoordinate = req.path.match(/(\d+)\/(\d+)\/(\d+)\.png$/);
+        console.log('tileCoordinate', tileCoordinate);
+        if (!tileCoordinate) {
+          return next();
+        }
+        // slice the regexp down to usable size      
+        tileCoordinate = tileCoordinate.slice(1,4).map(Number);
   
-    // set the bounds and render
-    bounds = Projector.util.tileToMeters(tileCoordinate[1], tileCoordinate[2], tileCoordinate[0]);
-    map.render({
-      bounds: {minX: bounds[0], minY: bounds[1], maxX: bounds[2], maxY: bounds[3]},
-      settings: settings,
-      width: 256,
-      height: 256,
-      zoom: tileCoordinate[0],
-      request: req,
-      callback: function(err, canvas) {
-        // TODO: catche the error
-        var stream = canvas.createPNGStream();
-        stream.pipe(res);
+        // set the bounds and render
+        bounds = Projector.util.tileToMeters(tileCoordinate[1], tileCoordinate[2], tileCoordinate[0]);
+        map.render({
+          bounds: {minX: bounds[0], minY: bounds[1], maxX: bounds[2], maxY: bounds[3]},
+          width: 256,
+          height: 256,
+          zoom: tileCoordinate[0],
+          request: req,
+          callback: function(err, canvas) {
+            // TODO: catche the error
+            if(err){
+              console.log('err ',err);
+            }
+            else{
+              console.log('canvas ',canvas);
+              var stream = canvas.createPNGStream();
+              stream.pipe(res);              
+            }
+          }
+        });
       }
-    });
+    );
   };
 };
 
@@ -85,45 +107,51 @@ module.exports.utfGrid = function utfGrid(options){
   
   return function tilePng(req, res, next){
     var tileCoordinate, format, bounds;
-    var settings = agencies(req.params);
-    
-    console.log(settings);
-    
-    // verify arguments (don't forget jsonp!)
-    tileCoordinate = req.path.match(/(\d+)\/(\d+)\/(\d+)\.(png|json|jsonp)$/);
-    if (!tileCoordinate) {
-      return next();
-    }
+    options.agencyName = req.url.substr(1).split("/")[0];
+    // console.log('options ',options);
+    var agency = new Agency(req, res, options);
+    agency.getSettings(
+      function(err){ 
+      },
+      function(settings){
+        //
+        settings = settings['generatedTileJsons'][0];
+        
+        // verify arguments (don't forget jsonp!)
+        tileCoordinate = req.path.match(/(\d+)\/(\d+)\/(\d+)\.(png|json|jsonp)$/);
+        if (!tileCoordinate) {
+          return next();
+        }
 
-    // slice the regexp down to usable size 
-    console.log(tileCoordinate[4]);
-    format = tileCoordinate[4];     
-    tileCoordinate = tileCoordinate.slice(1,4).map(Number);
+        // slice the regexp down to usable size 
+        console.log(tileCoordinate[4]);
+        format = tileCoordinate[4];     
+        tileCoordinate = tileCoordinate.slice(1,4).map(Number);
  
-    // Show the rasterized utfgrid for debugging 
-    respondWithImage = format === 'png';
-    if (respondWithImage) {
-      renderHandler = function(err, canvas) {
-        var stream = canvas.createPNGStream();
-        stream.pipe(res);
-      };
-    }
-    else {
-      renderHandler = function(err, grid) {
-        res.jsonp(grid);
-      };
-    }
-    bounds = Projector.util.tileToMeters(tileCoordinate[1], tileCoordinate[2], tileCoordinate[0], 64);
-    map.renderGrid({
-      bounds: {minX: bounds[0], minY: bounds[1], maxX: bounds[2], maxY: bounds[3]},
-      width: 64,
-      height: 64,
-      settings: settings,
-      zoom: tileCoordinate[0],
-      drawImage: respondWithImage,
-      callback: renderHandler
-    }); 
-  };
+        // Show the rasterized utfgrid for debugging 
+        respondWithImage = format === 'png';
+        if (respondWithImage) {
+          renderHandler = function(err, canvas) {
+            var stream = canvas.createPNGStream();
+            stream.pipe(res);
+          };
+        }
+        else {
+          renderHandler = function(err, grid) {
+            res.jsonp(grid);
+          };
+        }
+        bounds = Projector.util.tileToMeters(tileCoordinate[1], tileCoordinate[2], tileCoordinate[0], 64);
+        map.renderGrid({
+          bounds: {minX: bounds[0], minY: bounds[1], maxX: bounds[2], maxY: bounds[3]},
+          width: 64,
+          height: 64,
+          zoom: tileCoordinate[0],
+          drawImage: respondWithImage,
+          callback: renderHandler
+        }); 
+      });
+    };
 };
 
 
@@ -142,16 +170,15 @@ module.exports.utfGrid = function utfGrid(options){
 module.exports.tileJson = function tileJson(options) {
   var options = options || {};
   return function tileJson(req, res, next){
-    // @TODO just looking for params.agencyName, but lets send the entire request in case we to pass more later
-
-    var agency = new Agency(req.params);    
-    var settings = '';
-    agency.getSettings(function(params){
-      settings = params;
-    });
-    
-    console.log("is this real? "  + settings);
-
-    return res.jsonp(options.tilejson.set(settings).toJSON());
+    options.agencyName = req.params['agencyName'];
+    var agency = new Agency(req, res, options);
+    agency.getSettings(
+      function(err){
+        console.log(err);
+      },
+      function(settings){
+        return res.jsonp(options.tilejson.set(settings['generatedTileJsons'][0]).toJSON());
+      }
+    );
   }
 };
