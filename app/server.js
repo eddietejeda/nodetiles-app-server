@@ -68,7 +68,7 @@ module.exports.tilePng = function tilePng(options){
           callback: function(err, canvas) {
             // TODO: catche the error
             if(err){
-              console.log('err ',err);
+              console.log('***** error ******* ',err);
             }
             else{
               console.log('canvas ',canvas);

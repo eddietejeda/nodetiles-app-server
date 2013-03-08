@@ -50,6 +50,7 @@ Agency.prototype = {
         options = this.options,
         req = this.req,
         res = this.res;       
+        console.log(options);
 
     client.connect(function(err) {
       client.query("SELECT settings FROM Agencies WHERE alias=$1 LIMIT 1;", [options.agencyName], function(err, result) {

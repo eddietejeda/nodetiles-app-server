@@ -33,7 +33,7 @@ var Address = function(options) {
     projection: 'EPSG:900913',   // optional, defaults to 4326
     requestParams: {
       agency_name : { 
-        statement: ' agency_name = :agency_name '
+        statement: ' agency_alias = :agency_name '
       },
       open_cases : { 
         statement: ' open_count >= :open_cases '
