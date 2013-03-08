@@ -55,8 +55,10 @@ Agency.prototype = {
     client.connect(function(err) {
       client.query("SELECT settings FROM Agencies WHERE alias=$1 LIMIT 1;", [options.agencyName], function(err, result) {
         console.log(result.rows)
-        this.settings = JSON.parse(result.rows[0]['settings']); 
-        success_callback(this.settings);
+        if(result.rows.length > 0){
+          this.settings = JSON.parse(result.rows[0]['settings']); 
+          success_callback(this.settings);          
+        }
       });
     });
   }
