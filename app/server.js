@@ -176,8 +176,8 @@ module.exports.tileJson = function tileJson(options) {
   return function tileJson(req, res, next){
     options.agencyName = req.params['agencyName'];
     var agency = new Agency(req, res, options);
-    console.log(options)
-    console.log(agency);
+    console.log('options ',options)
+    console.log('agency ',agency);
 
     agency.getSettings(
       function(err){
