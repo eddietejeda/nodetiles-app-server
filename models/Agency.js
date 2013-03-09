@@ -50,13 +50,17 @@ Agency.prototype = {
         options = this.options,
         req = this.req,
         res = this.res;       
-        console.log(options);
+    console.log('********** about to connect');
 
     client.connect(function(err) {
+      console.log('********** about to connect', err);
+
       client.query("SELECT settings FROM Agencies WHERE alias=$1 LIMIT 1;", [options.agencyName], function(err, result) {
-        console.log(result.rows)
+        console.log("*************COUNT ROWS*************",result.rows)
+        console.log("*************RESPONSE ERROR*************",err)
         if(result.rows.length > 0){
           this.settings = JSON.parse(result.rows[0]['settings']); 
+          console.log("*************RESPONSE CALLBACK*************")
           success_callback(this.settings);          
         }
       });
