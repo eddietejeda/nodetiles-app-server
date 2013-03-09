@@ -32,7 +32,11 @@ module.exports.tilePng = function tilePng(options){
   return function tilePng(req, res, next){
     var tileCoordinate, bounds;
     options.agencyName = req.url.substr(1).split("/")[0];
+    
+    console.log(options);
     var agency = new Agency(req, res, options);
+
+    console.log(agency);
     agency.getSettings(
       function(err){
       
@@ -172,6 +176,9 @@ module.exports.tileJson = function tileJson(options) {
   return function tileJson(req, res, next){
     options.agencyName = req.params['agencyName'];
     var agency = new Agency(req, res, options);
+    console.log(options)
+    console.log(agency);
+
     agency.getSettings(
       function(err){
         console.log(err);
