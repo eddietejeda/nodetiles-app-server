@@ -8,7 +8,7 @@ var Address = function(options) {
   //defaults
   if(process.env.NODE_ENV  == 'production'){
     console.log('Production Database');
-    this.connectionString = "tcp://" + process.env.DATABASE_URL;
+    this.connectionString = process.env.DATABASE_URL;
   }
   else if (process.env.NODE_ENV  == 'development'){
     console.log('Development Database defined at NODE_DEVELOPMENT_DATABASE_URL');

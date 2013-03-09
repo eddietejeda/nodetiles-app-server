@@ -15,7 +15,7 @@ var Agency = function(req, res, options) {
   //defaults
   if(process.env.NODE_ENV  == 'production'){
     console.log('Production Database');
-    this.connectionString = "tcp://" + process.env.DATABASE_URL;
+    this.connectionString = process.env.DATABASE_URL;
   }
   else if (process.env.NODE_ENV  == 'development'){
     console.log('Development Database defined at NODE_DEVELOPMENT_DATABASE_URL');
@@ -50,18 +50,19 @@ Agency.prototype = {
         options = this.options,
         req = this.req,
         res = this.res;       
-    console.log('********** about to connect');
 
     client.connect(function(err) {
-      console.log('********** about to connect', err);
+      console.log('********** connection error', err);
 
-      client.query("SELECT settings FROM Agencies WHERE alias=$1 LIMIT 1;", [options.agencyName], function(err, result) {
-        console.log("*************COUNT ROWS*************",result.rows)
-        console.log("*************RESPONSE ERROR*************",err)
-        if(result.rows.length > 0){
-          this.settings = JSON.parse(result.rows[0]['settings']); 
-          console.log("*************RESPONSE CALLBACK*************")
-          success_callback(this.settings);          
+      client.query("SELECT settings FROM agencies WHERE alias=$1 LIMIT 1;", [options.agencyName], function(err, result) {
+        if(err){
+          console.log("*************RESPONSE ERROR",err)          
+        }
+        else{
+          if(result.rows){
+            this.settings = JSON.parse(result.rows[0]['settings']); 
+            success_callback(this.settings);          
+          }
         }
       });
     });
