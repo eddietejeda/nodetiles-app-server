@@ -7,8 +7,8 @@ var nodetiles = require('nodetiles-core'),
     app = module.exports = express(),
     fs = require('fs'),
     Address = require('./models/Address'),    
-    TileJSON = require('./app/tilejson'),
-    appServer = require('./app/server');
+    TileJSON = require('./lib/tilejson'),
+    appServer = require('./lib/server');
 
 // Some general settings
 var PORT = process.env.PORT || process.argv[2] || 5000;
